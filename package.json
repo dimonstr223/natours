@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/dimonstr223/natours/issues"
   },
-  "homepage": "https://github.com/dimonstr223/natours#readme"
+  "homepage": "https://github.com/dimonstr223/natours#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
