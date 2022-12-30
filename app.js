@@ -1,7 +1,11 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
+
 const app = express();
 
+// 1) MIDDLEWARES
+app.use(morgan('dev'));
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -17,6 +21,8 @@ app.use((req, res, next) => {
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+
+// 2) ROUT HANDLERS
 
 const getAllTours = (req, res) => {
   res.status(200).json({
@@ -37,12 +43,12 @@ const getTour = (req, res) => {
       status: 'fail',
       message: 'Invalid ID',
     });
+  } else {
+    res.status(200).json({
+      status: 'success',
+      data: { tour },
+    });
   }
-
-  res.status(200).json({
-    status: 'success',
-    data: { tour },
-  });
 };
 const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
@@ -69,13 +75,14 @@ const updateTour = (req, res) => {
       status: 'fail',
       message: 'Invalid ID',
     });
+  } else {
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: '<Updated tour here...>',
+      },
+    });
   }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here...>',
-    },
-  });
 };
 const deleteTour = (req, res) => {
   if (Number(req.params.id >= tours.length)) {
@@ -83,12 +90,15 @@ const deleteTour = (req, res) => {
       status: 'fail',
       message: 'Invalid ID',
     });
+  } else {
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
   }
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
 };
+
+// 3) ROUTES
 
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
@@ -97,6 +107,8 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+// 4) START SERVER
 
 const port = 3000;
 app.listen(port, () => {
