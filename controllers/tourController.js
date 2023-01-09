@@ -3,7 +3,8 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
-    // BUILD QUETY
+    // BUILD QUERY
+
     // 1.1) Filtering
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'limit', 'sort', 'fields'];
@@ -19,6 +20,8 @@ exports.getAllTours = async (req, res) => {
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
     }
 
     // EXECUTE QUERY
