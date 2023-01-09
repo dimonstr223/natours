@@ -21,16 +21,27 @@ exports.getAllTours = async (req, res) => {
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
     } else {
-      query = query.sort('-createdAt');
+      // query = query.sort('-createdAt');
     }
 
-    //3. Field limiting
+    // 3. Field limiting
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
       query = query.select(fields);
     } else {
       query = query.select('-__v');
     }
+
+    // 4. Pagination
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error('This page is not found');
+    }
+    query = query.skip(skip).limit(limit);
 
     // EXECUTE QUERY
     const tours = await query;
